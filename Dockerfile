@@ -10,7 +10,7 @@ RUN go install github.com/ElioNeto/vyx/core/cmd/vyx@latest
 FROM node:20-alpine AS frontend-builder
 WORKDIR /app
 COPY frontend/package*.json ./
-RUN npm ci --no-audit --no-fund
+RUN rm -f package-lock.json && npm install --no-audit --no-fund
 COPY frontend/ .
 RUN npm run build
 
@@ -19,7 +19,7 @@ FROM node:20-alpine AS backend-builder
 WORKDIR /app
 COPY backend/node/package*.json ./
 COPY packages/worker /packages/worker
-RUN npm ci --no-audit --no-fund
+RUN rm -f package-lock.json && npm install --no-audit --no-fund
 COPY backend/node/tsconfig.json backend/node/src/ ./
 RUN npx tsc --outDir ./dist
 
