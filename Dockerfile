@@ -8,12 +8,17 @@ RUN apk add --no-cache git ca-certificates
 COPY backend/go/go.mod backend/go/main.go /build/
 RUN cd /build && CGO_ENABLED=0 go build -o /out/vyx-worker-go .
 
-# ─── Stage 2: Build @vyx/worker SDK ─────────────────────────────────────
+# ─── Stage 2: Build @vyx/worker SDK (ESM + CJS) ─────────────────────────
 FROM node:20-alpine AS worker-sdk-builder
 WORKDIR /sdk
 COPY packages/worker/ ./
 RUN npm install --no-audit --no-fund 2>/dev/null || true
+# Build ESM
 RUN npx tsc 2>/dev/null || true
+# Build CJS (needed for require() in CommonJS workers)
+RUN cp tsconfig.json tsconfig.cjs.json && \
+    node -e "const t=require('./tsconfig.cjs.json');t.compilerOptions.module='commonjs';t.compilerOptions.outDir='dist/cjs';require('fs').writeFileSync('tsconfig.cjs.json',JSON.stringify(t,null,2))" && \
+    npx tsc -p tsconfig.cjs.json 2>/dev/null || true
 
 # ─── Stage 3: Build frontend ────────────────────────────────────────────
 FROM node:20-alpine AS frontend-builder
