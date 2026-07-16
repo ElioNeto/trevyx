@@ -6,7 +6,15 @@ FROM golang:1.25-alpine AS go-builder
 RUN apk add --no-cache git
 RUN go install github.com/ElioNeto/vyx/core/cmd/vyx@latest
 
-# ─── Stage 2: Build frontend ────────────────────────────────────────────
+# ─── Stage 2: Build @vyx/worker SDK ─────────────────────────────────────
+FROM node:20-alpine AS worker-sdk-builder
+WORKDIR /sdk
+COPY packages/worker/package*.json ./
+RUN npm install --no-audit --no-fund
+COPY packages/worker/ ./
+RUN npx tsc
+
+# ─── Stage 3: Build frontend ────────────────────────────────────────────
 FROM node:20-alpine AS frontend-builder
 WORKDIR /app
 COPY frontend/package*.json ./
@@ -14,11 +22,11 @@ RUN rm -f package-lock.json && npm install --no-audit --no-fund
 COPY frontend/ .
 RUN npm run build
 
-# ─── Stage 3: Build backend worker ──────────────────────────────────────
+# ─── Stage 4: Build backend worker ──────────────────────────────────────
 FROM node:20-alpine AS backend-builder
 WORKDIR /app
 COPY backend/node/package*.json ./
-COPY packages/worker /packages/worker
+COPY --from=worker-sdk-builder /sdk /packages/worker
 RUN rm -f package-lock.json && npm install --no-audit --no-fund
 COPY backend/node/tsconfig.json /app/
 COPY backend/node/src /app/src
