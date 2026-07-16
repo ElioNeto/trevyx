@@ -8,18 +8,12 @@ RUN apk add --no-cache git ca-certificates
 COPY backend/go/go.mod backend/go/main.go /build/
 RUN cd /build && CGO_ENABLED=0 go build -o /out/vyx-worker-go .
 
-# ─── Stage 2: Build @vyx/worker SDK (ESM + CJS) ─────────────────────────
+# ─── Stage 2: Build @vyx/worker SDK (ESM only — backend imports as ESM) ──
 FROM node:20-alpine AS worker-sdk-builder
 WORKDIR /sdk
 COPY packages/worker/ ./
-RUN npm install --no-audit --no-fund 2>/dev/null || true
-# Build ESM
-RUN npx tsc 2>/dev/null || true
-# Build CJS (needed for require() in CommonJS workers)
-RUN cp tsconfig.json tsconfig.cjs.json && \
-    node -e "const t=require('./tsconfig.cjs.json');t.compilerOptions.module='commonjs';t.compilerOptions.outDir='dist/cjs';require('fs').writeFileSync('tsconfig.cjs.json',JSON.stringify(t,null,2))" && \
-    npx tsc -p tsconfig.cjs.json 2>/dev/null || true && \
-    node -e "require('fs').writeFileSync('dist/cjs/package.json','{\"type\":\"commonjs\"}\n')"
+RUN npm install --no-audit --no-fund
+RUN npx -p typescript tsc
 
 # ─── Stage 3: Build frontend ────────────────────────────────────────────
 FROM node:20-alpine AS frontend-builder
@@ -35,11 +29,14 @@ WORKDIR /app
 COPY backend/node/package*.json ./
 # Copy @vyx/worker directly (avoid symlink issues with TypeScript)
 COPY --from=worker-sdk-builder /sdk /packages/worker
-RUN rm -f package-lock.json && npm install --no-audit --no-fund --no-bin-links 2>/dev/null; \
-    cp -r /packages/worker /app/node_modules/@vyx/worker 2>/dev/null || true
+RUN rm -f package-lock.json && npm install --no-audit --no-fund 2>/dev/null; \
+    rm -rf /app/node_modules/@vyx/worker && \
+    cp -r /packages/worker /app/node_modules/@vyx/worker && \
+    ls -la /app/node_modules/@vyx/worker/dist/esm/ 2>/dev/null || echo "No ESM dist" && \
+    ls /app/node_modules/@vyx/worker/dist/cjs/ 2>/dev/null || echo "No CJS dist"
 COPY backend/node/tsconfig.json /app/
 COPY backend/node/src /app/src
-RUN npx tsc
+RUN npx -p typescript tsc
 
 # ─── Stage 5: Runtime (Alpine + Node + Go + Python) ─────────────────────
 FROM alpine:3.20
