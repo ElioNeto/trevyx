@@ -33,8 +33,10 @@ RUN npm run build
 FROM node:20-alpine AS backend-builder
 WORKDIR /app
 COPY backend/node/package*.json ./
+# Copy @vyx/worker directly (avoid symlink issues with TypeScript)
 COPY --from=worker-sdk-builder /sdk /packages/worker
-RUN rm -f package-lock.json && npm install --no-audit --no-fund
+RUN rm -f package-lock.json && npm install --no-audit --no-fund --no-bin-links 2>/dev/null; \
+    cp -r /packages/worker /app/node_modules/@vyx/worker 2>/dev/null || true
 COPY backend/node/tsconfig.json /app/
 COPY backend/node/src /app/src
 RUN npx tsc
@@ -71,7 +73,6 @@ COPY --from=frontend-builder --chown=app:app /app/dist /app/frontend
 
 # ─── Worker Node.js ────────────────────────────────────────────────────
 COPY --from=backend-builder --chown=app:app /app/dist /app/worker
-COPY --from=worker-sdk-builder --chown=app:app /sdk /app/@vyx-worker
 COPY --from=backend-builder --chown=app:app /app/node_modules /app/node_modules
 # Replace broken symlink @vyx/worker → /packages/worker with real copy
 RUN rm -rf /app/node_modules/@vyx/worker && cp -r /app/@vyx-worker /app/node_modules/@vyx/worker && rm -rf /app/@vyx-worker
