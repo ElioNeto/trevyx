@@ -5,6 +5,8 @@
 FROM golang:1.25-alpine AS go-builder
 RUN apk add --no-cache git ca-certificates
     RUN go install github.com/ElioNeto/vyx/core/cmd/vyx@fix-all-remaining
+COPY backend/go/go.mod backend/go/main.go /build/
+RUN cd /build && CGO_ENABLED=0 go build -o /out/vyx-worker-go .
 
 # ─── Stage 2: Build @vyx/worker SDK ─────────────────────────────────────
 FROM node:20-alpine AS worker-sdk-builder
@@ -66,7 +68,6 @@ COPY --from=backend-builder --chown=app:app /app/dist /app/worker
 COPY --from=backend-builder --chown=app:app /app/node_modules /app/node_modules
 
 # ─── Worker Go ─────────────────────────────────────────────────────────
-COPY backend/go/main.go backend/go/go.mod /app/worker-go/
 
 # ─── Worker Python ─────────────────────────────────────────────────────
 COPY backend/python/main.py /app/worker-python/
@@ -78,8 +79,8 @@ COPY vyx.yaml /app/vyx.yaml
 COPY route_map.json /app/route_map.json
 RUN chmod +x /app/vyx-core
 
-# Pré-compilar o worker Go (evita go run em produção)
-RUN cd /app/worker-go && CGO_ENABLED=0 go build -o /app/vyx-worker-go .
+# Go worker binary (compiled in go-builder stage)
+COPY --from=go-builder --chown=app:app /out/vyx-worker-go /app/vyx-worker-go
 
 EXPOSE 8080
 VOLUME ["/data"]
