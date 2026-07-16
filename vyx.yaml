@@ -11,6 +11,20 @@ workers:
     startup_timeout: 10s
     shutdown_timeout: 5s
 
+  - id: go:export
+    command: go run main.go
+    working_dir: ./backend/go
+    replicas: 1
+    startup_timeout: 30s
+    shutdown_timeout: 5s
+
+  - id: python:stats
+    command: python3 main.py
+    working_dir: ./backend/python
+    replicas: 1
+    startup_timeout: 10s
+    shutdown_timeout: 5s
+
 security:
   jwt_secret_env: JWT_SECRET
   rate_limit:
