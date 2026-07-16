@@ -1,6 +1,7 @@
 {
   "name": "trevyx-backend",
   "version": "0.1.0",
+  "type": "module",
   "description": "Trevyx API — Trello clone powered by vyx",
   "main": "dist/index.js",
   "scripts": {
