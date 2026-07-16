@@ -18,7 +18,8 @@ RUN npx tsc 2>/dev/null || true
 # Build CJS (needed for require() in CommonJS workers)
 RUN cp tsconfig.json tsconfig.cjs.json && \
     node -e "const t=require('./tsconfig.cjs.json');t.compilerOptions.module='commonjs';t.compilerOptions.outDir='dist/cjs';require('fs').writeFileSync('tsconfig.cjs.json',JSON.stringify(t,null,2))" && \
-    npx tsc -p tsconfig.cjs.json 2>/dev/null || true
+    npx tsc -p tsconfig.cjs.json 2>/dev/null || true && \
+    node -e "require('fs').writeFileSync('dist/cjs/package.json','{\"type\":\"commonjs\"}\n')"
 
 # ─── Stage 3: Build frontend ────────────────────────────────────────────
 FROM node:20-alpine AS frontend-builder
