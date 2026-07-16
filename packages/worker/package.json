@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Node.js worker SDK for vyx",
   "main": "dist/cjs/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "type": "module",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.config.cjs",
@@ -35,7 +35,8 @@
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/esm/index.d.ts"
     }
   }
 }
