@@ -20,8 +20,9 @@ WORKDIR /app
 COPY backend/node/package*.json ./
 COPY packages/worker /packages/worker
 RUN rm -f package-lock.json && npm install --no-audit --no-fund
-COPY backend/node/tsconfig.json backend/node/src/ ./
-RUN npx tsc --outDir ./dist
+COPY backend/node/tsconfig.json /app/
+COPY backend/node/src /app/src
+RUN npx tsc
 
 # ─── Stage 4: Runtime ───────────────────────────────────────────────────
 FROM alpine:3.20
