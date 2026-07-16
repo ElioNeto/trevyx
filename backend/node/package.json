@@ -9,7 +9,7 @@
     "dev": "tsc && node dist/index.js"
   },
   "dependencies": {
-    "@vyx/worker": "file:../../../vyx/packages/worker",
+    "@vyx/worker": "file:../../packages/worker",
     "better-sqlite3": "^11.0.0",
     "uuid": "^10.0.0",
     "bcryptjs": "^2.4.3",

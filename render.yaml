@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: trevyx
+    env: docker
+    dockerfilePath: ./Dockerfile.render
+    dockerContext: .
+    healthCheckPath: /api/auth/me
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: TREVYX_DB_PATH
+        value: /data/trevyx.db
+    disk:
+      name: sqlite-data
+      mountPath: /data
+      sizeGB: 1
