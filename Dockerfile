@@ -4,8 +4,7 @@
 # ─── Stage 1: Build vyx core from GitHub (branch com fixes) ──────────────
 FROM golang:1.25-alpine AS go-builder
 RUN apk add --no-cache git ca-certificates
-RUN go install github.com/ElioNeto/vyx/core/cmd/vyx@fix-all-remaining
-RUN go install github.com/ElioNeto/vyx/cmd/vyx@fix-all-remaining
+    RUN go install github.com/ElioNeto/vyx/core/cmd/vyx@fix-all-remaining
 
 # ─── Stage 2: Build @vyx/worker SDK ─────────────────────────────────────
 FROM node:20-alpine AS worker-sdk-builder
