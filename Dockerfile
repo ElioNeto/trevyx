@@ -1,10 +1,11 @@
 # Trevyx — Dockerfile para produção (todos os workers)
 # Build auto-contido para Render / Docker Hub.
 
-# ─── Stage 1: Build vyx core from GitHub ────────────────────────────────
+# ─── Stage 1: Build vyx core from GitHub (branch com fixes) ──────────────
 FROM golang:1.25-alpine AS go-builder
-RUN apk add --no-cache git
-RUN go install github.com/ElioNeto/vyx/core/cmd/vyx@latest
+RUN apk add --no-cache git ca-certificates
+RUN go install github.com/ElioNeto/vyx/core/cmd/vyx@fix-all-remaining
+RUN go install github.com/ElioNeto/vyx/cmd/vyx@fix-all-remaining
 
 # ─── Stage 2: Build @vyx/worker SDK ─────────────────────────────────────
 FROM node:20-alpine AS worker-sdk-builder
@@ -75,10 +76,11 @@ COPY backend/python/main.py /app/worker-python/
 COPY schemas /app/schemas
 COPY vyx.yaml /app/vyx.yaml
 
+COPY route_map.json /app/route_map.json
 RUN chmod +x /app/vyx-core
 
 # Pré-compilar o worker Go (evita go run em produção)
-RUN mkdir -p /go && export GOPATH=/go && cd /app/worker-go && go build -o /app/vyx-worker-go . 2>/dev/null || true
+RUN cd /app/worker-go && CGO_ENABLED=0 go build -o /app/vyx-worker-go .
 
 EXPOSE 8080
 VOLUME ["/data"]
