@@ -1,0 +1,45 @@
+project:
+  name: trevyx
+  version: 0.1.0
+
+workers:
+  - id: node:node
+    command: node dist/index.js
+    working_dir: ./backend/node
+    replicas: 1
+    strategy: round-robin
+    startup_timeout: 10s
+    shutdown_timeout: 5s
+
+security:
+  jwt_secret_env: JWT_SECRET
+  rate_limit:
+    per_ip: 100
+    per_token: 500
+  circuit_breaker:
+    failures: 5
+    cooldown: 30s
+    half_open_max: 3
+  payload_max_size: 10mb
+  global_timeout: 60s
+
+ipc:
+  socket_dir: /tmp/vyx
+  arrow_threshold: 512kb
+
+build:
+  schemas_dir: ./schemas
+  route_map_output: ./route_map.json
+
+infrastructure:
+  backend:
+    type: local
+    config:
+      path: .vyx/infra.tfstate
+  resources:
+    - type: aws_s3_bucket
+      id: trevyx-uploads
+      provider: aws
+    - type: aws_rds_instance
+      id: trevyx-database
+      provider: aws

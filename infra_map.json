@@ -1,0 +1,67 @@
+{
+  "resources": [
+    {
+      "type": "aws_s3_bucket",
+      "provider": "aws",
+      "id": "uploads",
+      "properties": {},
+      "tags": {
+        "app": "trevyx",
+        "env": "production"
+      },
+      "outputs": [
+        "bucket_arn",
+        "bucket_domain"
+      ]
+    },
+    {
+      "type": "aws_rds_instance",
+      "provider": "aws",
+      "id": "database",
+      "properties": {},
+      "depends_on": [
+        "uploads"
+      ],
+      "tags": {
+        "app": "trevyx",
+        "env": "production"
+      },
+      "outputs": [
+        "host",
+        "port",
+        "arn"
+      ]
+    },
+    {
+      "type": "aws_instance",
+      "provider": "aws",
+      "id": "app-server",
+      "properties": {},
+      "depends_on": [
+        "database"
+      ],
+      "tags": {
+        "app": "trevyx",
+        "env": "production"
+      },
+      "outputs": [
+        "public_ip",
+        "private_ip"
+      ]
+    },
+    {
+      "type": "aws_sqs_queue",
+      "provider": "aws",
+      "id": "task-queue",
+      "properties": {},
+      "tags": {
+        "app": "trevyx",
+        "env": "production"
+      },
+      "outputs": [
+        "queue_arn",
+        "queue_url"
+      ]
+    }
+  ]
+}

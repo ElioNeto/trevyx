@@ -1,0 +1,265 @@
+/* Trevyx — Global Styles */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+input, button, textarea { font-family: inherit; font-size: inherit; }
+
+input {
+  background: #16213e;
+  border: 1px solid #0f3460;
+  color: #e0e0e0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input:focus { border-color: #4361ee; }
+
+button {
+  background: #4361ee;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+button:hover { opacity: 0.9; }
+button:active { opacity: 0.8; }
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid #0f3460;
+  color: #a0a0c0;
+}
+.btn-secondary:hover { background: #16213e; }
+
+.btn-icon {
+  background: transparent;
+  color: #666;
+  padding: 4px 8px;
+  font-size: 18px;
+  line-height: 1;
+}
+.btn-icon:hover { color: #e74c3c; background: transparent; }
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: #16213e;
+  border-bottom: 1px solid #0f3460;
+}
+header h1 { font-size: 20px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+
+/* ─── Login Page ─────────────────────────────────────────────────────── */
+
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #1a1a2e;
+}
+.login-card {
+  background: #16213e;
+  padding: 40px;
+  border-radius: 12px;
+  width: 400px;
+  border: 1px solid #0f3460;
+}
+.login-card h1 { text-align: center; font-size: 32px; margin-bottom: 8px; }
+.login-card .subtitle { text-align: center; color: #888; margin-bottom: 24px; }
+.login-card form { display: flex; flex-direction: column; gap: 12px; }
+.login-card form input { width: 100%; }
+.login-card form button { margin-top: 8px; padding: 12px; }
+.login-card .error { color: #e74c3c; font-size: 14px; }
+.login-card .switch {
+  text-align: center;
+  margin-top: 16px;
+  color: #4361ee;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* ─── Home Page ───────────────────────────────────────────────────────── */
+
+.home-page main {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.boards-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.boards-header h2 { font-size: 24px; }
+
+.new-board-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+.new-board-form input { flex: 1; }
+
+.boards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.board-card {
+  background: #16213e;
+  border-radius: 8px;
+  padding: 20px;
+  border-top: 4px solid #2563eb;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.board-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.board-card h3 { margin-bottom: 8px; }
+.board-card p { color: #888; font-size: 14px; }
+
+/* ─── Board Page ─────────────────────────────────────────────────────── */
+
+.board-page header h1 { flex: 1; text-align: center; }
+
+.board {
+  display: flex;
+  gap: 16px;
+  padding: 24px;
+  overflow-x: auto;
+  min-height: calc(100vh - 60px);
+  align-items: flex-start;
+}
+
+.kanban-list {
+  background: #16213e;
+  border-radius: 8px;
+  min-width: 280px;
+  max-width: 300px;
+  border: 1px solid #0f3460;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 100px);
+}
+
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-bottom: 1px solid #0f3460;
+}
+.list-header h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; color: #a0a0c0; }
+.list-header input { width: 100%; }
+
+.cards-container {
+  padding: 8px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 60px;
+}
+
+.kanban-card {
+  background: #1a1a2e;
+  border: 1px solid #0f3460;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: grab;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.kanban-card:active { cursor: grabbing; }
+.kanban-card:hover { border-color: #4361ee; }
+.kanban-card .card-title { font-weight: 600; margin-bottom: 4px; }
+.kanban-card .card-desc { font-size: 12px; color: #888; margin-bottom: 8px; }
+.kanban-card .card-meta { display: flex; gap: 8px; font-size: 11px; color: #666; }
+.kanban-card .btn-icon.delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: none;
+}
+.kanban-card:hover .btn-icon.delete { display: block; }
+
+.priority-high { color: #e74c3c; }
+.priority-medium { color: #f39c12; }
+.priority-low { color: #2ecc71; }
+
+.add-card-form { padding: 8px; border-top: 1px solid #0f3460; }
+.add-card-form input { width: 100%; }
+
+.add-list { min-width: 280px; }
+.add-list .list-header { border: none; }
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #888;
+  font-size: 18px;
+}
+
+/* ─── Card Labels ────────────────────────────────────────────────────── */
+
+.card-labels { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+.label-badge { font-size: 10px; padding: 2px 6px; border-radius: 3px; color: white; font-weight: 600; text-transform: uppercase; }
+
+/* ─── Inline Edit ────────────────────────────────────────────────────── */
+
+.inline-edit { display: flex; gap: 8px; align-items: center; flex: 1; max-width: 500px; }
+.inline-edit input { flex: 1; }
+
+/* ─── Modal ──────────────────────────────────────────────────────────── */
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center; z-index: 100;
+}
+.modal {
+  background: #16213e; border-radius: 12px; width: 600px; max-width: 90vw;
+  max-height: 85vh; overflow-y: auto; border: 1px solid #0f3460;
+  display: flex; flex-direction: column;
+}
+.modal-header { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #0f3460; }
+.modal-title-input { flex: 1; font-size: 20px; font-weight: 700; background: transparent; border: none; color: inherit; }
+.modal-body { padding: 20px; flex: 1; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 20px; border-top: 1px solid #0f3460; }
+.modal-field { margin-bottom: 16px; }
+.modal-field label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 6px; }
+.modal-field input, .modal-field textarea, .modal-field select {
+  width: 100%; background: #1a1a2e; border: 1px solid #0f3460;
+  color: #e0e0e0; padding: 8px 12px; border-radius: 6px; font-size: 14px;
+}
+.modal-field textarea { resize: vertical; min-height: 80px; }
+.modal-row { display: flex; gap: 16px; }
+.modal-row .modal-field { flex: 1; }
+
+/* ─── Comments ───────────────────────────────────────────────────────── */
+
+.comments-list { max-height: 200px; overflow-y: auto; margin-bottom: 8px; }
+.comment { background: #1a1a2e; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; }
+.comment strong { font-size: 13px; }
+.comment .comment-time { font-size: 11px; color: #666; margin-left: 8px; }
+.comment p { font-size: 13px; margin-top: 4px; color: #c0c0d0; }
+.comment .empty { color: #666; font-style: italic; }
+.add-comment { display: flex; gap: 8px; }
+.add-comment input { flex: 1; }

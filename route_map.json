@@ -1,0 +1,254 @@
+{
+  "routes": [
+    {
+      "path": "/api/export/boards/:id/csv",
+      "method": "GET",
+      "worker_id": "go:go",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "api"
+    },
+    {
+      "path": "/api/export/boards/:id/json",
+      "method": "GET",
+      "worker_id": "go:go",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "api"
+    },
+    {
+      "path": "/api/auth/register",
+      "method": "POST",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "public"
+      ],
+      "validate": "JsonSchema: \"register\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/auth/login",
+      "method": "POST",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "public"
+      ],
+      "validate": "JsonSchema: \"login\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/auth/me",
+      "method": "GET",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "api"
+    },
+    {
+      "path": "/api/boards",
+      "method": "GET",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "api"
+    },
+    {
+      "path": "/api/boards",
+      "method": "POST",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "JsonSchema: \"create_board\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/boards/:id",
+      "method": "GET",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "api"
+    },
+    {
+      "path": "/api/boards/:id",
+      "method": "PUT",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "JsonSchema: \"update_board\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/boards/:id",
+      "method": "DELETE",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "api"
+    },
+    {
+      "path": "/api/boards/:boardId/lists",
+      "method": "POST",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "JsonSchema: \"create_list\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/lists/:id",
+      "method": "PUT",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "JsonSchema: \"update_list\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/lists/:id",
+      "method": "DELETE",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "api"
+    },
+    {
+      "path": "/api/boards/:boardId/lists/reorder",
+      "method": "POST",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "JsonSchema: \"reorder_lists\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/lists/:listId/cards",
+      "method": "POST",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "JsonSchema: \"create_card\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/cards/:id",
+      "method": "GET",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "api"
+    },
+    {
+      "path": "/api/cards/:id",
+      "method": "PUT",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "JsonSchema: \"update_card\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/cards/:id",
+      "method": "DELETE",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "api"
+    },
+    {
+      "path": "/api/cards/:cardId/move",
+      "method": "POST",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "JsonSchema: \"move_card\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/lists/:listId/cards/reorder",
+      "method": "POST",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "JsonSchema: \"reorder_cards\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/cards/:cardId/comments",
+      "method": "POST",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "JsonSchema: \"create_comment\"",
+      "type": "api"
+    },
+    {
+      "path": "/api/cards/:cardId/comments",
+      "method": "GET",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "api"
+    },
+    {
+      "path": "/api/search?q=...",
+      "method": "GET",
+      "worker_id": "node:node",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "api"
+    },
+    {
+      "path": "/",
+      "method": "GET",
+      "worker_id": "node:ssr",
+      "auth_roles": [
+        "public"
+      ],
+      "validate": "",
+      "type": "page"
+    },
+    {
+      "path": "/board/:id",
+      "method": "GET",
+      "worker_id": "node:ssr",
+      "auth_roles": [
+        "user"
+      ],
+      "validate": "",
+      "type": "page"
+    }
+  ]
+}

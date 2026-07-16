@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.vyr/
+.git/
+*.md
+*.db
+.vyr/
+.vyx/
