@@ -11,6 +11,20 @@ workers:
     startup_timeout: 10s
     shutdown_timeout: 5s
 
+  - id: go:export
+    command: /app/vyx-worker-go
+    working_dir: /app
+    replicas: 1
+    startup_timeout: 5s
+    shutdown_timeout: 5s
+
+  - id: python:stats
+    command: python3 /app/worker-python/main.py
+    working_dir: /app
+    replicas: 1
+    startup_timeout: 10s
+    shutdown_timeout: 5s
+
 security:
   jwt_secret_env: JWT_SECRET
   rate_limit:
