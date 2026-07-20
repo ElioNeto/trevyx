@@ -70,9 +70,8 @@ COPY --from=frontend-builder --chown=app:app /app/dist /app/frontend
 
 # ─── Worker Node.js ────────────────────────────────────────────────────
 COPY --from=backend-builder --chown=app:app /app/dist /app/worker
+# node_modules from backend-builder already has a real copy of @vyx/worker (not a symlink)
 COPY --from=backend-builder --chown=app:app /app/node_modules /app/node_modules
-# Replace broken symlink @vyx/worker → /packages/worker with real copy
-RUN rm -rf /app/node_modules/@vyx/worker && cp -r /app/@vyx-worker /app/node_modules/@vyx/worker && rm -rf /app/@vyx-worker
 
 # ─── Worker Go ─────────────────────────────────────────────────────────
 
