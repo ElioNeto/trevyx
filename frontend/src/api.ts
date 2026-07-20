@@ -20,8 +20,7 @@ async function request(method: string, path: string, body?: any): Promise<any> {
     data = await res.json();
   } catch {
     const text = await res.text().catch(() => '');
-    if (!res.ok) throw new Error(text || `HTTP ${res.status}`);
-    return text;
+    throw new Error(text || `HTTP ${res.status}`);
   }
   if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
   return data;

@@ -155,7 +155,7 @@ export function BoardPage({ boardId, onBack, user }: Props) {
       </header>
 
       <div className="board">
-        {board.lists.map((list: any) => (
+        {Array.isArray(board.lists) && board.lists.map((list: any) => (
           <div key={list.id} className="kanban-list"
             onDragOver={e => e.preventDefault()}
             onDrop={() => handleDrop(list.id)}

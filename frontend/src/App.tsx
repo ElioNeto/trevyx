@@ -23,7 +23,13 @@ export default function App() {
 
   useEffect(() => {
     if (token) {
-      api.auth.me().then(setUser).catch(() => {
+      api.auth.me().then(data => {
+        if (data && typeof data === 'object' && data.id && data.name) {
+          setUser(data);
+        } else {
+          throw new Error('invalid user data');
+        }
+      }).catch(() => {
         localStorage.removeItem('trevyx_token');
         setToken(null);
       });
@@ -35,7 +41,14 @@ export default function App() {
   }, [user]);
 
   function loadBoards() {
-    api.boards.list().then(setBoards).catch(console.error);
+    api.boards.list().then(data => {
+      if (Array.isArray(data)) {
+        setBoards(data);
+      } else {
+        console.error('boards API returned non-array:', data);
+        setBoards([]);
+      }
+    }).catch(console.error);
   }
 
   async function handleLogin(e: React.FormEvent) {
@@ -141,7 +154,7 @@ export default function App() {
           </div>
         )}
         <div className="boards-grid">
-          {boards.map(board => (
+          {Array.isArray(boards) && boards.map(board => (
             <div
               key={board.id}
               className="board-card"
