@@ -1,6 +1,6 @@
 // Trevyx — Data access layer
 import { v4 as uuid } from 'uuid';
-import { getDb } from './db';
+import { getDb } from './db.js';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 

@@ -70,6 +70,8 @@ COPY --from=frontend-builder --chown=app:app /app/dist /app/frontend
 
 # ─── Worker Node.js ────────────────────────────────────────────────────
 COPY --from=backend-builder --chown=app:app /app/dist /app/worker
+# package.json with "type":"module" so Node treats .js files as ESM
+COPY backend/node/package.json /app/worker/package.json
 # node_modules from backend-builder already has a real copy of @vyx/worker (not a symlink)
 COPY --from=backend-builder --chown=app:app /app/node_modules /app/node_modules
 
@@ -91,6 +93,11 @@ COPY --from=go-builder --chown=app:app /out/vyx-worker-go /app/vyx-worker-go
 EXPOSE 8080
 VOLUME ["/data"]
 
+# Frontend static server with proper MIME types
+RUN printf '%s\n' \
+  'const m={"js":"application/javascript","css":"text/css","html":"text/html","png":"image/png","svg":"image/svg+xml","ico":"image/x-icon","json":"application/json"};' \
+  'require("http").createServer((r,s)=>{try{let f=r.url==="/"?"index.html":"."+r.url.split("?")[0];s.writeHead(200,{"Content-Type":m[f.split(".").pop()]||"text/plain"});s.end(require("fs").readFileSync(f))}catch{s.end("404")}}).listen(3000)' > /app/serve-frontend.js
+
 # Entrypoint
 RUN printf '#!/bin/sh\n\
 set -e\n\
@@ -101,17 +108,17 @@ export VYX_DIR="/app/.vyx"\n\
 export HOME="/app"\n\
 export PATH="$PATH:/usr/lib/go/bin:$HOME/.local/bin"\n\
 mkdir -p "$(dirname "$TREVYX_DB_PATH")" "$VYX_DIR/sockets" "$VYX_DIR/runtimes"\n\
-echo "🚀 Starting vyx core..."\n\
+echo "Starting vyx core..."\n\
 /app/vyx-core 2>&1 &\n\
 CORE_PID=$!\n\
 for i in $(seq 1 30); do\n\
   if curl -sf http://localhost:8080/api/auth/me > /dev/null 2>&1; then\n\
-    echo "✅ Core ready"; break\n\
+    echo "Core ready"; break\n\
   fi\n\
   sleep 1\ndone\n\
-echo "🎨 Serving frontend on :3000..."\n\
-cd /app/frontend && node -e "require(\"http\").createServer((r,s)=>{try{s.end(require(\"fs\").readFileSync(r.url===\"/\"?\"index.html\":\".\"+r.url))}catch{s.end(\"404\")}}).listen(3000)" &\n\
-echo "✅ Trevyx running (API: :8080, Frontend: :3000, Workers: node+go+python)"\n\
+echo "Serving frontend on :3000..."\n\
+cd /app/frontend && node /app/serve-frontend.js &\n\
+echo "Trevyx running (API: :8080, Frontend: :3000, Workers: node+go+python)"\n\
 wait $CORE_PID\n' > /entrypoint.sh && chmod +x /entrypoint.sh
 
 USER app

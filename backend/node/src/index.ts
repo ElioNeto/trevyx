@@ -5,8 +5,7 @@ import { worker, json, error, text } from '@vyx/worker';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
-import * as models from './models';
-import { getDb } from './db';
+import * as models from './models.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'trevyx-dev-secret-at-least-32-bytes-long!!';
 
