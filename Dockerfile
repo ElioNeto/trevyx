@@ -93,10 +93,21 @@ COPY --from=go-builder --chown=app:app /out/vyx-worker-go /app/vyx-worker-go
 EXPOSE 8080
 VOLUME ["/data"]
 
-# Frontend static server with proper MIME types
+# Frontend proxy: serves static files AND proxies /api/* to vyx core
 RUN printf '%s\n' \
+  'const http=require("http"),fs=require("fs");' \
   'const m={"js":"application/javascript","css":"text/css","html":"text/html","png":"image/png","svg":"image/svg+xml","ico":"image/x-icon","json":"application/json"};' \
-  'require("http").createServer((r,s)=>{try{let f=r.url==="/"?"index.html":"."+r.url.split("?")[0];s.writeHead(200,{"Content-Type":m[f.split(".").pop()]||"text/plain"});s.end(require("fs").readFileSync(f))}catch{s.end("404")}}).listen(3000)' > /app/serve-frontend.js
+  'http.createServer((q,s)=>{' \
+  '  if(q.url==="/healthz"){s.writeHead(200);return s.end("OK")}' \
+  '  if(q.url.startsWith("/api/")){' \
+  '    const o={hostname:"localhost",port:8080,path:q.url,method:q.method,headers:q.headers};' \
+  '    const r=http.request(o,p=>{s.writeHead(p.statusCode,p.headers);p.pipe(s)});' \
+  '    r.on("error",()=>{s.writeHead(502,{"Content-Type":"application/json"});s.end(JSON.stringify({error:"upstream unreachable"}))});' \
+  '    return q.pipe(r)' \
+  '  }' \
+  '  try{let f=q.url==="/"?"index.html":"."+q.url.split("?")[0];s.writeHead(200,{"Content-Type":m[f.split(".").pop()]||"text/plain"});s.end(fs.readFileSync(f))}' \
+  '  catch{s.writeHead(404,{"Content-Type":"application/json"});s.end(JSON.stringify({error:"not found"}))}' \
+  '}).listen(3000)' > /app/serve-frontend.js
 
 # Entrypoint
 RUN printf '#!/bin/sh\n\
@@ -107,19 +118,26 @@ export VYX_CONFIG="/app/vyx.yaml"\n\
 export VYX_DIR="/app/.vyx"\n\
 export HOME="/app"\n\
 export PATH="$PATH:/usr/lib/go/bin:$HOME/.local/bin"\n\
-mkdir -p "$(dirname "$TREVYX_DB_PATH")" "$VYX_DIR/sockets" "$VYX_DIR/runtimes"\n\
-echo "Starting vyx core..."\n\
+mkdir -p "$(dirname "$TREVYX_DB_PATH")" /tmp/vyx "$VYX_DIR/sockets" "$VYX_DIR/runtimes"\n\
+# Start frontend proxy first so Render detects its port\n\
+echo "Starting frontend proxy on :3000..."\n\
+cd /app/frontend && node /app/serve-frontend.js &\n\
+PROXY_PID=$!\n\
+for i in $(seq 1 15); do\n\
+  if curl -sf http://localhost:3000/healthz > /dev/null 2>&1; then\n\
+    echo "Proxy ready"; break\n\
+  fi\n\
+  sleep 1\ndone\n\
+echo "Starting vyx core on :8080..."\n\
 /app/vyx-core 2>&1 &\n\
 CORE_PID=$!\n\
 for i in $(seq 1 30); do\n\
-  if curl -sf http://localhost:8080/api/auth/me > /dev/null 2>&1; then\n\
+  if curl -s http://localhost:8080/api/auth/me > /dev/null 2>&1; then\n\
     echo "Core ready"; break\n\
   fi\n\
   sleep 1\ndone\n\
-echo "Serving frontend on :3000..."\n\
-cd /app/frontend && node /app/serve-frontend.js &\n\
-echo "Trevyx running (API: :8080, Frontend: :3000, Workers: node+go+python)"\n\
-wait $CORE_PID\n' > /entrypoint.sh && chmod +x /entrypoint.sh
+echo "Trevyx running (Frontend+Proxy: :3000, Core: :8080, Workers: node+go+python)"\n\
+wait $CORE_PID $PROXY_PID\n' > /entrypoint.sh && chmod +x /entrypoint.sh
 
 USER app
 ENTRYPOINT ["/sbin/tini", "--", "/entrypoint.sh"]
