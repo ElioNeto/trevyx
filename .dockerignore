@@ -4,5 +4,5 @@ dist/
 .git/
 *.md
 *.db
-.vyr/
-.vyx/
+.vyx/core
+.vyx/runtimes

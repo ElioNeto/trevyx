@@ -11,7 +11,7 @@ RUN cd /build && CGO_ENABLED=0 go build -o /out/vyx-worker-go .
 # ─── Stage 2: Build @vyx/worker SDK (ESM only — backend imports as ESM) ──
 FROM node:20-alpine AS worker-sdk-builder
 WORKDIR /sdk
-COPY packages/worker/ ./
+COPY .vyx/deps/ts-js/vyx-worker/ ./
 RUN npm install --no-audit --no-fund
 RUN npx -p typescript tsc
 
